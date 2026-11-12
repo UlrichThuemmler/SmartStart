@@ -264,19 +264,19 @@ internal sealed class MenuForm : Form
 
         if (Filter.Length > 0)
         {
-            return searching ? "Suche …" : "Keine Treffer";
+            return searching ? L.Searching : L.NoResults;
         }
 
         if (loading)
         {
-            return "Lädt …";
+            return L.Loading;
         }
 
         return status switch
         {
-            FolderStatus.NoAccess => "Kein Zugriff",
-            FolderStatus.NotFound => "Ordner nicht gefunden",
-            _ => "(leer)",
+            FolderStatus.NoAccess => L.NoAccess,
+            FolderStatus.NotFound => L.FolderNotFound,
+            _ => L.EmptyFolder,
         };
     }
 
@@ -592,7 +592,7 @@ internal sealed class MenuForm : Form
                     TextFormatFlags.SingleLine | TextFormatFlags.NoPadding;
         if (Filter.Length == 0)
         {
-            TextRenderer.DrawText(g, "Suchen …", font, tr, theme.TextDim, flags | TextFormatFlags.EndEllipsis);
+            TextRenderer.DrawText(g, L.Search, font, tr, theme.TextDim, flags | TextFormatFlags.EndEllipsis);
         }
         else
         {

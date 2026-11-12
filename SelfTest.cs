@@ -6,7 +6,7 @@
 /// </summary>
 internal static class SelfTest
 {
-    public static async Task Run(MenuController c, string outDir, Action exit)
+    public static async Task Run(MenuController c, AppSettings settings, string outDir, Action exit)
     {
         Directory.CreateDirectory(outDir);
         try
@@ -56,6 +56,19 @@ internal static class SelfTest
             Press(c, Keys.Escape);
             await Task.Delay(200);
             Log.Write($"SelfTest: nach 2x Esc offen={c.IsOpen}");
+
+            // Einstellungsfenster (Sprache/Design prüfen)
+            using (var sf = new SettingsForm(settings.Clone()))
+            {
+                sf.StartPosition = FormStartPosition.Manual;
+                sf.Location = new Point(-32000, -32000);
+                sf.Show();
+                await Task.Delay(500);
+                using var bmp = new Bitmap(sf.Width, sf.Height);
+                sf.DrawToBitmap(bmp, new Rectangle(0, 0, sf.Width, sf.Height));
+                bmp.Save(Path.Combine(outDir, "08_settings.png"));
+                sf.Close();
+            }
         }
         catch (Exception ex)
         {

@@ -6,17 +6,17 @@ internal sealed class SettingsForm : Form
     private readonly AppSettings s;
     private readonly TextBox rootBox = new() { Width = 360 };
     private readonly TextBox hotkeyBox = new() { Width = 200, ReadOnly = true };
-    private readonly ComboBox themeBox = Combo("Dunkel", "Hell", "Wie Windows");
-    private readonly ComboBox positionBox = Combo("Unten links", "Unten rechts", "Am Mauszeiger", "Bildschirmmitte");
-    private readonly ComboBox hiddenBox = Combo("Wie im Explorer", "Immer anzeigen", "Nie anzeigen");
+    private readonly ComboBox themeBox = Combo(L.DesignOptions);
+    private readonly ComboBox positionBox = Combo(L.PositionOptions);
+    private readonly ComboBox hiddenBox = Combo(L.HiddenOptions);
     private readonly NumericUpDown sizeBox = Num(70, 250, 5);
     private readonly NumericUpDown widthBox = Num(200, 1200, 20);
     private readonly NumericUpDown openDelayBox = Num(0, 2000, 50);
     private readonly NumericUpDown closeDelayBox = Num(100, 10000, 100);
-    private readonly CheckBox closeAfterLaunch = new() { Text = "Menü nach dem Starten eines Programms schließen", AutoSize = true };
-    private readonly CheckBox folderSingleClick = new() { Text = "Ordner mit einfachem Klick im Explorer öffnen (sonst Doppelklick)", AutoSize = true };
-    private readonly CheckBox resolveLinks = new() { Text = "Verknüpfungen zu Ordnern als Untermenü anzeigen", AutoSize = true };
-    private readonly CheckBox autostart = new() { Text = "Mit Windows starten", AutoSize = true };
+    private readonly CheckBox closeAfterLaunch = new() { Text = L.CloseAfterLaunch, AutoSize = true };
+    private readonly CheckBox folderSingleClick = new() { Text = L.FolderSingleClick, AutoSize = true };
+    private readonly CheckBox resolveLinks = new() { Text = L.ResolveLinks, AutoSize = true };
+    private readonly CheckBox autostart = new() { Text = L.StartWithWindows, AutoSize = true };
     private readonly bool autostartInitial;
     private string hotkey;
 
@@ -24,7 +24,7 @@ internal sealed class SettingsForm : Form
     {
         s = settings;
         hotkey = settings.Hotkey;
-        Text = "SmartStart – Einstellungen";
+        Text = L.SettingsTitle;
         Icon = AppIcon.Get(32);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -42,23 +42,23 @@ internal sealed class SettingsForm : Form
 
         var browse = new Button { Text = "…", Width = 32 };
         browse.Click += (_, _) => Browse();
-        AddRow(grid, "Stammordner:", Flow(rootBox, browse));
+        AddRow(grid, L.RootFolder, Flow(rootBox, browse));
 
-        var resetHotkey = new Button { Text = "Standard (Strg+Win)", AutoSize = true };
+        var resetHotkey = new Button { Text = L.HotkeyDefaultButton, AutoSize = true };
         resetHotkey.Click += (_, _) => SetHotkey("Ctrl+LWin");
         hotkeyBox.KeyDown += HotkeyBox_KeyDown;
         hotkeyBox.KeyUp += (_, e) => e.Handled = true;
         hotkeyBox.PreviewKeyDown += (_, e) => e.IsInputKey = true;
-        AddRow(grid, "Tastenkürzel:", Flow(hotkeyBox, resetHotkey));
-        AddRow(grid, string.Empty, new Label { Text = "In das Feld klicken und die gewünschte Kombination drücken.", AutoSize = true, ForeColor = SystemColors.GrayText });
+        AddRow(grid, L.Hotkey, Flow(hotkeyBox, resetHotkey));
+        AddRow(grid, string.Empty, new Label { Text = L.HotkeyHint, AutoSize = true, ForeColor = SystemColors.GrayText });
 
-        AddRow(grid, "Design:", themeBox);
-        AddRow(grid, "Position:", positionBox);
-        AddRow(grid, "Größe (%):", sizeBox);
-        AddRow(grid, "Max. Breite (px):", widthBox);
-        AddRow(grid, "Untermenü öffnen nach (ms):", openDelayBox);
-        AddRow(grid, "Schließen nach Verlassen (ms):", closeDelayBox);
-        AddRow(grid, "Versteckte Dateien:", hiddenBox);
+        AddRow(grid, L.Design, themeBox);
+        AddRow(grid, L.Position, positionBox);
+        AddRow(grid, L.Size, sizeBox);
+        AddRow(grid, L.MaxWidth, widthBox);
+        AddRow(grid, L.OpenDelay, openDelayBox);
+        AddRow(grid, L.CloseDelay, closeDelayBox);
+        AddRow(grid, L.HiddenFiles, hiddenBox);
 
         var checks = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, AutoSize = true, WrapContents = false, Margin = new Padding(0, 8, 0, 0) };
         checks.Controls.AddRange(new Control[] { closeAfterLaunch, folderSingleClick, resolveLinks, autostart });
@@ -66,7 +66,7 @@ internal sealed class SettingsForm : Form
         grid.SetColumnSpan(checks, 2);
 
         var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
-        var cancel = new Button { Text = "Abbrechen", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
+        var cancel = new Button { Text = L.Cancel, DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
         ok.Click += (_, _) => Collect();
         var buttons = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, AutoSize = true, Dock = DockStyle.Fill, Margin = new Padding(0, 12, 0, 0) };
         buttons.Controls.Add(cancel);
@@ -125,7 +125,7 @@ internal sealed class SettingsForm : Form
 
     private void Browse()
     {
-        using var dlg = new FolderBrowserDialog { UseDescriptionForTitle = true, Description = "Stammordner wählen" };
+        using var dlg = new FolderBrowserDialog { UseDescriptionForTitle = true, Description = L.ChooseRootShort };
         if (Directory.Exists(rootBox.Text))
         {
             dlg.InitialDirectory = rootBox.Text;
@@ -197,7 +197,7 @@ internal sealed class SettingsForm : Form
 
         if (parts.Count == 0 && !(k >= Keys.F1 && k <= Keys.F24))
         {
-            hotkeyBox.Text = "Bitte mit Strg/Alt/Umschalt/Win kombinieren";
+            hotkeyBox.Text = L.HotkeyCombine;
             return;
         }
 
@@ -246,7 +246,7 @@ internal static class InputDialog
         };
         var box = new TextBox { Text = value, Width = 380 };
         var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true };
-        var cancel = new Button { Text = "Abbrechen", DialogResult = DialogResult.Cancel, AutoSize = true };
+        var cancel = new Button { Text = L.Cancel, DialogResult = DialogResult.Cancel, AutoSize = true };
         var buttons = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, AutoSize = true, Dock = DockStyle.Fill };
         buttons.Controls.Add(cancel);
         buttons.Controls.Add(ok);

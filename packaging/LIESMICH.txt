@@ -1,11 +1,13 @@
 SmartStart – Schnellstart-Menü für Windows
 ==========================================
+(English: see README.txt)
 
 Zeigt den Inhalt eines Ordners (Verknüpfungen, Dateien, Unterordner) als
 Kaskadenmenü am Mauszeiger an. Öffnen und Schließen mit Strg+Win.
+Die Oberfläche ist auf Deutsch, wenn Windows auf Deutsch läuft, sonst Englisch.
 
 INSTALLIEREN
-  Doppelklick auf "Installieren.cmd".
+  Doppelklick auf "Install.cmd".
   -> kopiert SmartStart nach %LOCALAPPDATA%\Programs\SmartStart,
      legt einen Eintrag im Startmenü an und startet das Programm.
   Keine Administratorrechte nötig.
@@ -31,7 +33,7 @@ VORAUSSETZUNGEN
   Paket "win-x64-standalone": läuft ohne installiertes .NET.
 
 DEINSTALLIEREN
-  Doppelklick auf "Deinstallieren.cmd" (Einstellungen bleiben erhalten).
+  Doppelklick auf "Uninstall.cmd" (Einstellungen bleiben erhalten).
 
 Quellcode, Anleitung und Lizenz (MIT):
   https://github.com/UlrichThuemmler/SmartStart

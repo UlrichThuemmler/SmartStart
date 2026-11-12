@@ -1,9 +1,11 @@
-﻿# Entfernt SmartStart (Programmdateien, Startmenü-Verknüpfung, Autostart).
-# Die Einstellungen in %APPDATA%\SmartStart bleiben erhalten, außer mit -RemoveSettings.
+﻿# Removes SmartStart (program files, Start menu shortcut, autostart entry).
+# Settings in %APPDATA%\SmartStart are kept unless -RemoveSettings is given.
 param(
     [string]$Target = (Join-Path $env:LOCALAPPDATA 'Programs\SmartStart'),
     [switch]$RemoveSettings
 )
+
+$de = (Get-UICulture).TwoLetterISOLanguageName -eq 'de'
 
 $exe = Join-Path $Target 'SmartStart.exe'
 if (Test-Path $exe) { Start-Process $exe -ArgumentList '--quit' -Wait; Start-Sleep -Milliseconds 500 }
@@ -13,4 +15,4 @@ Remove-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 
 Remove-Item (Join-Path ([Environment]::GetFolderPath('Programs')) 'SmartStart.lnk') -ErrorAction SilentlyContinue
 if (Test-Path $Target) { Remove-Item $Target -Recurse -Force }
 if ($RemoveSettings) { Remove-Item (Join-Path $env:APPDATA 'SmartStart') -Recurse -Force -ErrorAction SilentlyContinue }
-Write-Host 'SmartStart entfernt.'
+Write-Host $(if ($de) { 'SmartStart entfernt.' } else { 'SmartStart removed.' })

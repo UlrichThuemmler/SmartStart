@@ -21,7 +21,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
         error = string.Empty;
         if (!TryParse(spec, out uint mods, out Keys key))
         {
-            error = $"Tastenkürzel \"{spec}\" ist ungültig.";
+            error = L.HotkeyInvalid(spec);
             return false;
         }
 
@@ -31,7 +31,7 @@ internal sealed class HotkeyWindow : NativeWindow, IDisposable
 
         if (!RegisterOne(mods, key))
         {
-            error = $"Tastenkürzel \"{spec}\" ist bereits belegt (läuft z. B. noch SystemTrayMenu?).";
+            error = L.HotkeyInUse(spec);
             return false;
         }
 

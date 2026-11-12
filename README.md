@@ -2,84 +2,88 @@
 
 <img src="Resources/SmartStart.png" alt="SmartStart" width="96" align="right">
 
-Schlankes Schnellstart-Menü für Windows. Zeigt den Inhalt eines Stammordners
-(Verknüpfungen, Dateien, Ordner) als Kaskadenmenü am Mauszeiger an – geöffnet mit **Strg+Win**.
-Mit globaler Suche über alle Unterordner, Explorer-Kontextmenü und Dark Mode.
+[Deutsch](README.de.md) · **English**
 
-Die Bedienung ist an [SystemTrayMenu](https://github.com/Hofknecht/SystemTrayMenu) angelehnt;
-SmartStart ist aber eine eigenständige, komplett neu geschriebene Umsetzung.
+A lightweight quick-launch menu for Windows. Shows the contents of a root folder
+(shortcuts, files, folders) as a cascading menu right at your mouse pointer – opened with **Ctrl+Win**.
+With global search across all subfolders, the Explorer context menu and dark mode.
+The interface is in German on German Windows and in English everywhere else.
+
+Its handling is inspired by [SystemTrayMenu](https://github.com/Hofknecht/SystemTrayMenu);
+SmartStart is an independent implementation written from scratch.
 
 ## Download
 
-Fertige Version unter **[Releases](https://github.com/UlrichThuemmler/SmartStart/releases/latest)**:
+Get the latest version from **[Releases](https://github.com/UlrichThuemmler/SmartStart/releases/latest)**:
 
-| Datei | Für wen |
+| File | For whom |
 |---|---|
-| `SmartStart-<Version>-win-x64-standalone.zip` | Läuft sofort, ohne installiertes .NET (ca. 42 MB) |
-| `SmartStart-<Version>-win-x64.zip` | Klein (0,2 MB), braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) |
+| `SmartStart-<version>-win-x64-standalone.zip` | Runs right away, no .NET installation needed (approx. 42 MB) |
+| `SmartStart-<version>-win-x64.zip` | Small (0.2 MB), requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) |
 
-ZIP entpacken und **`Installieren.cmd`** doppelklicken (keine Adminrechte nötig) – oder `SmartStart.exe`
-ohne Installation direkt starten. Da das Programm nicht signiert ist, kann Windows SmartScreen beim
-ersten Start warnen: „Weitere Informationen“ → „Trotzdem ausführen“.
+Unzip and double-click **`Install.cmd`** (no admin rights needed) – or run `SmartStart.exe`
+directly without installing. The program is not code-signed, so Windows SmartScreen may warn on
+first start: "More info" → "Run anyway".
 
-Voraussetzung: Windows 10/11 (64 Bit).
+Requirement: Windows 10/11 (64-bit).
 
-## Aus dem Quellcode bauen
+## Building from source
 
-Benötigt das .NET 10 SDK.
+Requires the .NET 10 SDK.
 
 ```powershell
-.\build.ps1      # erzeugt publish\SmartStart.exe (benötigt .NET 10 Desktop Runtime)
-.\install.ps1    # kopiert nach %LOCALAPPDATA%\Programs\SmartStart + Startmenü-Verknüpfung
+.\build.ps1      # creates publish\SmartStart.exe (requires the .NET 10 Desktop Runtime)
+.\install.ps1    # copies it to %LOCALAPPDATA%\Programs\SmartStart + Start menu shortcut
 ```
 
-Optionen: `.\install.ps1 -Target "C:\Tools\SmartStart" -Autostart`.
-Ohne installiertes .NET: `.\build.ps1 -SelfContained` (größere EXE).
-Alternativ einfach `publish\SmartStart.exe` irgendwo hinkopieren und starten – sie ist portabel.
+Options: `.\install.ps1 -Target "C:\Tools\SmartStart" -Autostart`.
+Without .NET installed: `.\build.ps1 -SelfContained` (larger EXE).
+Or simply copy `publish\SmartStart.exe` anywhere and run it – it is portable.
 
-Beim ersten Start wird der Stammordner abgefragt. Danach liegt SmartStart im Infobereich (Tray).
-Ein erneuter Start über Windows-Start öffnet das Menü der laufenden Instanz.
+On first start SmartStart asks for the root folder. After that it lives in the notification area (tray).
+Launching it again from Windows Start opens the menu of the running instance.
 
-## Bedienung
+## Usage
 
-| Eingabe | Funktion |
+| Input | Action |
 |---|---|
-| Strg+Win (auch Win+Strg) | Menü öffnen/schließen |
-| Klick aufs Tray-Symbol | Menü öffnen/schließen |
-| Maus über Ordner | Untermenü öffnet sich |
-| Klick | Datei/Programm starten (Menü schließt sich danach), Ordner aufklappen |
-| Doppelklick auf Ordner | Ordner im Explorer öffnen |
-| Strg+Umschalt+Klick / Strg+Umschalt+Enter | Als Administrator starten |
-| Rechtsklick | Explorer-Kontextmenü (+ „Im Explorer anzeigen“, „Menü aktualisieren“) |
-| Mittelklick | Im Explorer anzeigen |
-| Tippen | Globale Suche oben im Menü (ganzer Stammordner inkl. Unterordner, Leerzeichen egal), Enter startet den ersten Treffer |
-| ↑ ↓ ← → Bild↑ Bild↓ Pos1 Ende | Navigation |
-| Tab / Umschalt+Tab | Zwischen Menüebenen wechseln |
-| Esc | Suche leeren bzw. Menü schließen |
-| Kontextmenü-Taste / Umschalt+F10 | Kontextmenü des markierten Eintrags |
-| F2 | Umbenennen |
-| F5 | Neu laden |
-| Ziehen aus dem Menü | Datei auf Desktop/in Programme ziehen |
-| Dateien/Links ins Menü ziehen | Verknüpfung (.lnk / .url) im Ordner anlegen |
+| Ctrl+Win (also Win+Ctrl) | Open/close the menu |
+| Click on the tray icon | Open/close the menu |
+| Hover over a folder | Opens its submenu |
+| Click | Launch file/program (the menu closes afterwards), expand folder |
+| Double-click a folder | Open the folder in Explorer |
+| Ctrl+Shift+click / Ctrl+Shift+Enter | Run as administrator |
+| Right-click | Explorer context menu (+ "Show in Explorer", "Refresh menu") |
+| Middle-click | Show in Explorer |
+| Type | Global search at the top of the menu (whole root folder incl. subfolders, spaces ignored), Enter launches the first hit |
+| ↑ ↓ ← → PgUp PgDn Home End | Navigation |
+| Tab / Shift+Tab | Switch between menu levels |
+| Esc | Clear the search, or close the menu |
+| Menu key / Shift+F10 | Context menu of the selected entry |
+| F2 | Rename |
+| F5 | Reload |
+| Drag from the menu | Drop a file onto the desktop or into programs |
+| Drag files/links into the menu | Creates a shortcut (.lnk / .url) in that folder |
 
-Das Menü bleibt offen, solange es den Fokus hat oder die Maus darüber ist (z. B. um mehrere Programme
-nacheinander zu starten), und schließt sich nach dem Verlassen. Mit der Pinnadel bleibt es offen.
+The menu stays open while it has focus or the mouse is over it (e.g. to launch several programs
+in a row) and closes after you leave it. Use the pin button to keep it open.
 
-## Einstellungen
+## Settings
 
-Über das Zahnrad im Menü oder Rechtsklick aufs Tray-Symbol. Gespeichert in
-`%APPDATA%\SmartStart\settings.json`: Stammordner, Tastenkürzel, Design (dunkel/hell/System),
-Position (Standard: am Mauszeiger; sonst unten links/rechts, Mitte), Größe, Breite, Verzögerungen, versteckte Dateien und
-Autostart. Alle Fenster und Menüs haben harte Ecken (keine Windows-11-Rundung).
+Via the gear icon in the menu or by right-clicking the tray icon. Stored in
+`%APPDATA%\SmartStart\settings.json`: root folder, hotkey, theme (dark/light/system),
+position (default: at the mouse pointer; or bottom left/right, center), size, width, delays, hidden files
+and autostart. All windows and menus have square corners (no Windows 11 rounding).
 
-## Entwicklung
+## Development
 
-- .NET 10, WinForms, komplett selbst gezeichnete Menüs (`MenuForm`), Logik in `MenuController`.
-- `--config <datei>` andere Einstellungsdatei, `--log <datei>` Diagnose-Log,
-  `--selftest <ordner>` interner Test ohne echte Eingaben (speichert Bilder der Menüs).
-- Icon neu erzeugen: `tools\make-icon.ps1`.
-- Release-Pakete erzeugen: `release.ps1` (legt beide ZIPs in `release\` ab; Version aus `SmartStart.csproj`).
+- .NET 10, WinForms, fully custom-drawn menus (`MenuForm`), logic in `MenuController`.
+- German/English texts in `Lang.cs`; the language follows the Windows display language (fallback: English).
+- `--config <file>` alternative settings file, `--log <file>` diagnostic log, `--lang de|en` force a language,
+  `--selftest <folder>` internal test without real input (saves images of the menus).
+- Regenerate the icon: `tools\make-icon.ps1`.
+- Build release packages: `release.ps1` (puts both ZIPs into `release\`; version taken from `SmartStart.csproj`).
 
-## Lizenz
+## License
 
 [MIT](LICENSE) © 2026 Ulrich Thümmler

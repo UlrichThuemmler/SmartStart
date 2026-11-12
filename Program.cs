@@ -14,10 +14,14 @@ internal static class Program
         string configPath = AppSettings.DefaultPath;
         bool autostart = false;
         bool quit = false;
+        string? lang = null;
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i].ToLowerInvariant())
             {
+                case "--lang" when i + 1 < args.Length:
+                    lang = args[++i];
+                    break;
                 case "--config" when i + 1 < args.Length:
                     configPath = Path.GetFullPath(args[++i]);
                     break;
@@ -59,6 +63,9 @@ internal static class Program
         {
             return;
         }
+
+        // Sprache nach Windows-Anzeigesprache: Deutsch, sonst Englisch
+        L.Init(lang);
 
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();

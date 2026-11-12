@@ -814,7 +814,7 @@ internal sealed class MenuController : IDisposable
         string? newName;
         try
         {
-            newName = InputDialog.Show("Umbenennen", "Neuer Name:", oldName);
+            newName = InputDialog.Show(L.Rename, L.NewName, oldName);
         }
         finally
         {
@@ -890,7 +890,7 @@ internal sealed class MenuController : IDisposable
             BeginModal();
             try
             {
-                MessageBox.Show($"Konnte nicht gestartet werden:\n{e.Path}\n\n{ex.Message}", "SmartStart",
+                MessageBox.Show(L.CouldNotStart(e.Path, ex.Message), "SmartStart",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally

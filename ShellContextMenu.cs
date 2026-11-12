@@ -105,13 +105,13 @@ internal sealed class ShellContextMenu
 
             // Eigene Einträge oben
             uint pos = 0;
-            Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdShowInExplorer, "Im Explorer anzeigen");
+            Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdShowInExplorer, L.ShowInExplorer);
             if (linkTargetFolder != null)
             {
-                Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdOpenTargetFolder, "Zielordner öffnen");
+                Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdOpenTargetFolder, L.OpenTargetFolder);
             }
 
-            Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdRefresh, "Menü aktualisieren");
+            Native.InsertMenuW(hMenu, pos++, Native.MF_BYPOSITION | Native.MF_STRING, (UIntPtr)IdRefresh, L.RefreshMenu);
             Native.InsertMenuW(hMenu, pos, Native.MF_BYPOSITION | Native.MF_SEPARATOR, UIntPtr.Zero, null);
 
             Current = this;

@@ -52,16 +52,16 @@ internal sealed class TrayApp : ApplicationContext
         controller.RootFolderMissing += () => invoker.BeginInvoke(() => ChooseRootFolder(openAfterwards: true));
 
         var menu = new ContextMenuStrip();
-        menu.Items.Add("Menü öffnen", null, (_, _) => invoker.BeginInvoke(controller.Open)).Font =
+        menu.Items.Add(L.TrayOpenMenu, null, (_, _) => invoker.BeginInvoke(controller.Open)).Font =
             new Font(menu.Font, FontStyle.Bold);
-        menu.Items.Add("Stammordner im Explorer öffnen", null, (_, _) => OpenRootInExplorer());
-        menu.Items.Add("Stammordner wählen …", null, (_, _) => ChooseRootFolder(openAfterwards: false));
-        menu.Items.Add("Einstellungen …", null, (_, _) => ShowSettings());
-        autostartItem = new ToolStripMenuItem("Mit Windows starten") { CheckOnClick = true };
+        menu.Items.Add(L.TrayOpenRoot, null, (_, _) => OpenRootInExplorer());
+        menu.Items.Add(L.TrayChooseRoot, null, (_, _) => ChooseRootFolder(openAfterwards: false));
+        menu.Items.Add(L.TraySettings, null, (_, _) => ShowSettings());
+        autostartItem = new ToolStripMenuItem(L.StartWithWindows) { CheckOnClick = true };
         autostartItem.Click += (_, _) => SetAutostart(autostartItem.Checked);
         menu.Items.Add(autostartItem);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Beenden", null, (_, _) => ExitThread());
+        menu.Items.Add(L.TrayExit, null, (_, _) => ExitThread());
         menu.Opening += (_, _) => autostartItem.Checked = Autostart.IsEnabled;
         trayMenu = menu;
         ApplyLook();
@@ -93,7 +93,7 @@ internal sealed class TrayApp : ApplicationContext
         if (Program.SelfTestDir != null)
         {
             string dir = Program.SelfTestDir;
-            invoker.BeginInvoke(() => _ = SelfTest.Run(controller, dir, ExitThread));
+            invoker.BeginInvoke(() => _ = SelfTest.Run(controller, settings, dir, ExitThread));
         }
         else if (string.IsNullOrWhiteSpace(settings.RootFolder))
         {
@@ -134,17 +134,14 @@ internal sealed class TrayApp : ApplicationContext
     {
         bool ok = hotkey.Register(settings.Hotkey, out string error);
         Log.Write($"Hotkey '{settings.Hotkey}' registriert={ok} {error}");
-        tray.Text = ok ? $"SmartStart ({HotkeyDisplay(settings.Hotkey)})" : "SmartStart (kein Tastenkürzel)";
+        tray.Text = ok ? $"SmartStart ({HotkeyDisplay(settings.Hotkey)})" : L.TrayNoHotkey;
         if (!ok && showError)
         {
             tray.ShowBalloonTip(5000, "SmartStart", error, ToolTipIcon.Warning);
         }
     }
 
-    public static string HotkeyDisplay(string spec) =>
-        spec.Replace("Ctrl", "Strg", StringComparison.OrdinalIgnoreCase)
-            .Replace("LWin", "Win", StringComparison.OrdinalIgnoreCase)
-            .Replace("Shift", "Umschalt", StringComparison.OrdinalIgnoreCase);
+    public static string HotkeyDisplay(string spec) => L.HotkeyDisplay(spec);
 
     private void OpenRootInExplorer()
     {
@@ -166,7 +163,7 @@ internal sealed class TrayApp : ApplicationContext
         {
             using var dlg = new FolderBrowserDialog
             {
-                Description = "Ordner wählen, dessen Inhalt (Verknüpfungen, Dateien, Ordner) im SmartStart-Menü erscheint",
+                Description = L.ChooseRootDescription,
                 UseDescriptionForTitle = true,
                 ShowNewFolderButton = true,
             };
@@ -232,7 +229,7 @@ internal sealed class TrayApp : ApplicationContext
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Einstellungen konnten nicht gespeichert werden:\n{ex.Message}", "SmartStart",
+            MessageBox.Show(L.CouldNotSaveSettings(ex.Message), "SmartStart",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
