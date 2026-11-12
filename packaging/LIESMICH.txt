@@ -1,0 +1,37 @@
+SmartStart – Schnellstart-Menü für Windows
+==========================================
+
+Zeigt den Inhalt eines Ordners (Verknüpfungen, Dateien, Unterordner) als
+Kaskadenmenü am Mauszeiger an. Öffnen und Schließen mit Strg+Win.
+
+INSTALLIEREN
+  Doppelklick auf "Installieren.cmd".
+  -> kopiert SmartStart nach %LOCALAPPDATA%\Programs\SmartStart,
+     legt einen Eintrag im Startmenü an und startet das Programm.
+  Keine Administratorrechte nötig.
+
+OHNE INSTALLATION (portabel)
+  SmartStart.exe einfach an einen beliebigen Ort kopieren und starten.
+
+ERSTER START
+  SmartStart fragt nach dem Stammordner, dessen Inhalt im Menü erscheint.
+  Danach liegt es im Infobereich der Taskleiste (Tray).
+  Einstellungen: Zahnrad im Menü oder Rechtsklick auf das Tray-Symbol.
+  Dort lässt sich auch "Mit Windows starten" einschalten.
+
+HINWEIS ZUR WINDOWS-WARNUNG
+  Das Programm ist nicht digital signiert. Beim ersten Start kann Windows
+  "Der Computer wurde durch Windows geschützt" anzeigen.
+  -> "Weitere Informationen" -> "Trotzdem ausführen".
+
+VORAUSSETZUNGEN
+  Windows 10/11 (64 Bit).
+  Paket "win-x64": .NET 10 Desktop Runtime erforderlich
+    (https://dotnet.microsoft.com/download/dotnet/10.0 -> ".NET Desktop Runtime").
+  Paket "win-x64-standalone": läuft ohne installiertes .NET.
+
+DEINSTALLIEREN
+  Doppelklick auf "Deinstallieren.cmd" (Einstellungen bleiben erhalten).
+
+Quellcode, Anleitung und Lizenz (MIT):
+  https://github.com/UlrichThuemmler/SmartStart

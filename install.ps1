@@ -1,5 +1,6 @@
 ﻿# Installiert SmartStart (ohne Administratorrechte):
-#  - kopiert publish\SmartStart.exe nach $Target (Standard: %LOCALAPPDATA%\Programs\SmartStart)
+#  - kopiert SmartStart.exe (aus dem Download-Paket bzw. publish\ nach build.ps1)
+#    nach $Target (Standard: %LOCALAPPDATA%\Programs\SmartStart)
 #  - legt eine Verknüpfung im Startmenü an (dann per Windows-Start "SmartStart" aufrufbar)
 #  - optional: Autostart mit Windows (-Autostart)
 param(
@@ -9,8 +10,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$src = Join-Path $PSScriptRoot 'publish\SmartStart.exe'
-if (-not (Test-Path $src)) { throw "Zuerst build.ps1 ausführen ($src fehlt)." }
+# Download-Paket: EXE liegt neben dem Skript. Quellcode: nach build.ps1 in publish\.
+$src = Join-Path $PSScriptRoot 'SmartStart.exe'
+if (-not (Test-Path $src)) { $src = Join-Path $PSScriptRoot 'publish\SmartStart.exe' }
+if (-not (Test-Path $src)) { throw "SmartStart.exe nicht gefunden. Im Quellcode zuerst build.ps1 ausführen." }
 
 # Laufende Instanz beenden
 $running = Get-Process SmartStart -ErrorAction SilentlyContinue

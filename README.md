@@ -9,10 +9,24 @@ Mit globaler Suche über alle Unterordner, Explorer-Kontextmenü und Dark Mode.
 Die Bedienung ist an [SystemTrayMenu](https://github.com/Hofknecht/SystemTrayMenu) angelehnt;
 SmartStart ist aber eine eigenständige, komplett neu geschriebene Umsetzung.
 
-**Voraussetzungen:** Windows 10/11, [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
-(zum Bauen das .NET 10 SDK).
+## Download
 
-## Installation
+Fertige Version unter **[Releases](https://github.com/UlrichThuemmler/SmartStart/releases/latest)**:
+
+| Datei | Für wen |
+|---|---|
+| `SmartStart-<Version>-win-x64-standalone.zip` | Läuft sofort, ohne installiertes .NET (ca. 42 MB) |
+| `SmartStart-<Version>-win-x64.zip` | Klein (0,2 MB), braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) |
+
+ZIP entpacken und **`Installieren.cmd`** doppelklicken (keine Adminrechte nötig) – oder `SmartStart.exe`
+ohne Installation direkt starten. Da das Programm nicht signiert ist, kann Windows SmartScreen beim
+ersten Start warnen: „Weitere Informationen“ → „Trotzdem ausführen“.
+
+Voraussetzung: Windows 10/11 (64 Bit).
+
+## Aus dem Quellcode bauen
+
+Benötigt das .NET 10 SDK.
 
 ```powershell
 .\build.ps1      # erzeugt publish\SmartStart.exe (benötigt .NET 10 Desktop Runtime)
@@ -64,6 +78,7 @@ Autostart. Alle Fenster und Menüs haben harte Ecken (keine Windows-11-Rundung).
 - `--config <datei>` andere Einstellungsdatei, `--log <datei>` Diagnose-Log,
   `--selftest <ordner>` interner Test ohne echte Eingaben (speichert Bilder der Menüs).
 - Icon neu erzeugen: `tools\make-icon.ps1`.
+- Release-Pakete erzeugen: `release.ps1` (legt beide ZIPs in `release\` ab; Version aus `SmartStart.csproj`).
 
 ## Lizenz
 
