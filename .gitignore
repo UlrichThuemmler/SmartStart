@@ -1,0 +1,14 @@
+# Build-Ausgaben
+bin/
+obj/
+publish/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Sonstiges
+*.log
