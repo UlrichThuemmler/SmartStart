@@ -11,6 +11,10 @@ internal static class SelfTest
         Directory.CreateDirectory(outDir);
         try
         {
+            // Wie beim ersten Start: Einstellungen übernehmen, bevor das Menü je offen war (Fehler in 1.1.0)
+            c.ApplySettings(settings.Clone());
+            Log.Write("SelfTest: ApplySettings vor dem ersten Öffnen ok");
+
             c.Open();
             await Task.Delay(1200);
             c.SetPinned(true);

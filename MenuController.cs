@@ -181,9 +181,16 @@ internal sealed class MenuController : IDisposable
             }
         }
 
+        if (levels.Count == 0)
+        {
+            // Menü wurde noch nie geöffnet (z. B. Ordnerwahl beim ersten Start)
+            focusLevel = 0;
+            return;
+        }
+
         if (focusLevel > levels.Count - 1)
         {
-            focusLevel = Math.Max(0, levels.Count - 1);
+            focusLevel = levels.Count - 1;
             levels[focusLevel].Invalidate();
         }
     }

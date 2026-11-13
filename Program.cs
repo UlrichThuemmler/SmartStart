@@ -67,6 +67,17 @@ internal static class Program
         // Sprache nach Windows-Anzeigesprache: Deutsch, sonst Englisch
         L.Init(lang);
 
+        // Unerwartete Fehler protokollieren und kurz melden, statt den .NET-Fehlerdialog zu zeigen
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += (_, e) =>
+        {
+            Log.Error("Unbehandelter Fehler: " + e.Exception);
+            MessageBox.Show(
+                $"{e.Exception.Message}\n\n{Log.ErrorLogPath}",
+                "SmartStart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Error("Absturz: " + e.ExceptionObject);
+
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);

@@ -11,7 +11,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>SmartStart</AssemblyName>
     <RootNamespace>SmartStart</RootNamespace>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Product>SmartStart</Product>
     <Description>Quick-launch menu for folders, files and shortcuts (Ctrl+Win)</Description>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>

@@ -42,6 +42,7 @@ internal sealed class TrayApp : ApplicationContext
     public TrayApp(string configPath, bool autostart)
     {
         settings = AppSettings.Load(configPath);
+        Autostart.RepairApproval();
         SharpCorners.Install();
         invoker = new Control();
         invoker.CreateControl();
@@ -229,6 +230,7 @@ internal sealed class TrayApp : ApplicationContext
         }
         catch (Exception ex)
         {
+            Log.Error($"Einstellungen nicht gespeichert ({updated.FilePath}): {ex}");
             MessageBox.Show(L.CouldNotSaveSettings(ex.Message), "SmartStart",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }

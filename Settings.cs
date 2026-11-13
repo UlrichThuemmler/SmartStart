@@ -72,16 +72,50 @@ internal sealed class AppSettings
 
     public static AppSettings Load(string path)
     {
-        AppSettings settings;
-        try
+        AppSettings? settings = null;
+        bool exists = File.Exists(path);
+        if (exists)
         {
-            settings = File.Exists(path)
-                ? JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path), JsonOptions) ?? new AppSettings()
-                : new AppSettings();
+            // Mehrere Versuche: direkt nach der Anmeldung kann die Datei kurz gesperrt sein
+            // (Virenscanner, Synchronisierung). Erst danach auf Standardwerte zurückfallen.
+            for (int attempt = 1; attempt <= 10 && settings == null; attempt++)
+            {
+                try
+                {
+                    string json = File.ReadAllText(path);
+                    settings = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions);
+                    if (settings == null)
+                    {
+                        throw new JsonException("Datei ist leer");
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    // Kaputte Datei aufbewahren statt sie beim nächsten Speichern zu überschreiben
+                    Log.Error($"Einstellungen ungültig ({path}): {ex.Message}");
+                    try
+                    {
+                        File.Copy(path, path + ".defekt", true);
+                    }
+                    catch
+                    {
+                        // ignorieren
+                    }
+
+                    break;
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    Log.Error($"Einstellungen nicht lesbar, Versuch {attempt}/10 ({path}): {ex.GetType().Name}: {ex.Message}");
+                    Thread.Sleep(300);
+                }
+            }
         }
-        catch
+
+        settings ??= new AppSettings();
+        if (exists && string.IsNullOrWhiteSpace(settings.RootFolder))
         {
-            settings = new AppSettings();
+            Log.Error($"Einstellungsdatei vorhanden, aber ohne Stammordner ({path})");
         }
 
         settings.FilePath = path;
@@ -98,7 +132,10 @@ internal sealed class AppSettings
             Directory.CreateDirectory(dir);
         }
 
-        File.WriteAllText(FilePath, JsonSerializer.Serialize(this, JsonOptions));
+        // Erst in eine Temp-Datei schreiben, dann ersetzen: so entsteht nie eine halbe Datei
+        string temp = FilePath + ".tmp";
+        File.WriteAllText(temp, JsonSerializer.Serialize(this, JsonOptions));
+        File.Move(temp, FilePath, true);
     }
 
     public AppSettings Clone()
@@ -139,31 +176,78 @@ internal sealed class AppSettings
     }
 }
 
-/// <summary>Autostart über HKCU\...\Run.</summary>
+/// <summary>
+/// Autostart über HKCU\...\Run. Windows führt Einträge nur aus, wenn sie in der Autostart-Liste
+/// (Task-Manager / Einstellungen → Apps → Autostart, gespeichert unter StartupApproved\Run) als
+/// aktiv gelten. Beim Einschalten in SmartStart wird der Eintrag dort deshalb ausdrücklich freigegeben.
+/// </summary>
 internal static class Autostart
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string ApprovedKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
     private const string ValueName = "SmartStart";
 
+    /// <summary>Eingetragen und nicht im Task-Manager deaktiviert.</summary>
     public static bool IsEnabled
     {
         get
         {
             using var key = Registry.CurrentUser.OpenSubKey(RunKey);
-            return key?.GetValue(ValueName) is string s && !string.IsNullOrWhiteSpace(s);
+            if (key?.GetValue(ValueName) is not string s || string.IsNullOrWhiteSpace(s))
+            {
+                return false;
+            }
+
+            using var approved = Registry.CurrentUser.OpenSubKey(ApprovedKey);
+            // Erstes Byte ungerade (z. B. 03) = vom Benutzer deaktiviert
+            return approved?.GetValue(ValueName) is not byte[] flags || flags.Length == 0 || (flags[0] & 1) == 0;
+        }
+    }
+
+    /// <summary>
+    /// Ist SmartStart (diese EXE) im Run-Schlüssel eingetragen, fehlt aber die Freigabe in der
+    /// Windows-Autostart-Liste, wird sie ergänzt. Eine Deaktivierung durch den Benutzer bleibt bestehen.
+    /// </summary>
+    public static void RepairApproval()
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RunKey);
+            if (key?.GetValue(ValueName) is not string cmd ||
+                Environment.ProcessPath == null ||
+                !cmd.Contains(Environment.ProcessPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            using var approved = Registry.CurrentUser.CreateSubKey(ApprovedKey);
+            if (approved.GetValue(ValueName) == null)
+            {
+                approved.SetValue(ValueName, new byte[] { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, RegistryValueKind.Binary);
+                Log.Write("Autostart-Freigabe ergänzt");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Autostart-Freigabe: " + ex.Message);
         }
     }
 
     public static void Set(bool enabled)
     {
         using var key = Registry.CurrentUser.CreateSubKey(RunKey);
+        using var approved = Registry.CurrentUser.CreateSubKey(ApprovedKey);
         if (enabled)
         {
             key.SetValue(ValueName, $"\"{Environment.ProcessPath}\" --autostart");
+
+            // 02 00 00 00 + 8 Byte Zeitstempel (0) = aktiv
+            approved.SetValue(ValueName, new byte[] { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, RegistryValueKind.Binary);
         }
         else
         {
             key.DeleteValue(ValueName, false);
+            approved.DeleteValue(ValueName, false);
         }
     }
 }
